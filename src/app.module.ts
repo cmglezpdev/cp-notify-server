@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ContestModule } from './contest/contest.module';
 import { JudgesModule } from './judges/judges.module';
@@ -14,6 +15,7 @@ import { Contest } from './contest/entities/contest.entity';
     ContestModule, 
     JudgesModule, 
     ProfileModule,
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -25,7 +27,7 @@ import { Contest } from './contest/entities/contest.entity';
       synchronize: true,
       autoLoadEntities: true
     }),
-    PlatformModule
+    PlatformModule,
   ],
 })
 export class AppModule {}

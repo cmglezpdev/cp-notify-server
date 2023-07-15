@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Cron } from '@nestjs/schedule';
 import { Repository } from 'typeorm';
 
 import { Platform as IPlatform } from './interfaces';
@@ -21,6 +22,7 @@ export class ContestService {
     private readonly platformRepository: Repository<Platform>
   ){}
 
+  @Cron('0 0 0 * * *')
   async insertContestsInDB() {
     const platforms: Platform[] = await this.platformRepository.find();
     const contests: Contest[] = [];
