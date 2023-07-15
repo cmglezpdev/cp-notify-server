@@ -15,11 +15,11 @@ export class PlatformService {
     }
 
     async getPlatformByName(name: string) {
-        const platforms: Platform[] = await this.platformRepository.query(
-            'SELECT * FROM platform WHERE UPPER(name) = $1;',
-            [name.toUpperCase()]
-        );
-        if(platforms.length == 0) return null;
-        return platforms[0];
+        const platform: Platform = await this.platformRepository
+            .createQueryBuilder('platform')
+            .where('UPPER(platform.name) = :name', { name: name.toUpperCase() })
+            .getOne();
+
+        return platform;
     }
 }
