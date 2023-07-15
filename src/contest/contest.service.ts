@@ -52,7 +52,7 @@ export class ContestService {
   async findAllFromDB(platform: string) {
     const contests: Contest[] = await this.contestRepository
       .createQueryBuilder('contest')
-      .innerJoin(Platform, 'platform', 'contest.platform = platform.id')
+      .innerJoinAndSelect('contest.platform', 'platform')
       .where('UPPER(platform.name) = :platform', { platform: platform.toUpperCase() })
       .getMany();
   
@@ -76,5 +76,18 @@ export class ContestService {
       default:
         throw new BadRequestException({ status: 400, message: `${platform} is not a valid platform for us.` });  
     }
+  }
+
+  async getContestById(platform: string, id: string) {
+    const contest: Contest = await this.contestRepository
+      .createQueryBuilder('contest')
+      .innerJoinAndSelect('contest.platform', 'platform') 
+      .where('UPPER(platform.name) = :plt AND contest.id = :id', { plt: platform.toUpperCase(), id })
+      .getOne(); 
+
+    if(!contest) {
+      throw new NotFoundException({ status: 404, message: `The contest with id ${id} not found.` });
+    }
+    return contest;
   }
 }
