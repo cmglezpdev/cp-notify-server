@@ -9,10 +9,10 @@ export class Contest {
     @Column('text', { nullable: false })
     name: string;
 
-    @Column('int', { nullable: false })
+    @Column('bigint', { nullable: false })
     durationSeconds:  number;
 
-    @Column('int', { nullable: false })
+    @Column('bigint', { nullable: false })
     startTimeSeconds: number;
     
     @Column('text', { nullable: false })
@@ -22,5 +22,5 @@ export class Contest {
     type?: string;
 
     @ManyToOne(() => Platform)
-    platform: string;
+    platform: Platform;
 }
