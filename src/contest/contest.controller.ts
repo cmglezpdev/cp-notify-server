@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post } from '@nestjs/common';
 import { ContestService } from './contest.service';
 import { Platform } from 'src/contest/interfaces';
 
@@ -10,5 +10,11 @@ export class ContestController {
   async findAll(@Param('platform') platform: string) {
     const contests = await this.contestService.findAll(platform.toUpperCase() as Platform);
     return { status: 200, contests }
+  }
+
+  @Post('/update')
+  async updateContests() {
+    const contests = await this.contestService.insertContestsInDB();
+    return { status: 200, message: 'The contest were updated in the database.', contests };
   }
 }
