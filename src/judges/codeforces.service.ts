@@ -14,7 +14,7 @@ export class CodeforcesService implements IPlatformService {
             upcomingContests.sort((contestA, contestB) => contestA.startTimeSeconds - contestB.startTimeSeconds);
         
             const contests : IContest[] = upcomingContests.map(contest => ({
-              id: contest.id,
+              id: `${contest.id}`,
               name: contest.name,
               type: contest.type,
               platform: 'CODEFORCES',

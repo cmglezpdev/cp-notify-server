@@ -43,9 +43,9 @@ export class AtCoderService implements IPlatformService {
                 }
             }
         
-            const generalContest : IContest[] = contests.map((contest, i) => {
+            const generalContest : IContest[] = contests.map((contest) => {
                 const { name, start, duration, link, type } = contest;
-                const id = i + 1;
+                const id = link.split('/')[link.split('/').length - 1];
                 const platform: Platform = 'ATCODER';
                 const durationSeconds = timeToSeconds(duration);
                 const startTimeSeconds = parseDate(start).getTime();

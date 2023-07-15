@@ -1,6 +1,6 @@
 
 export interface IContest {
-    id:               number;
+    id:               string;
     name:             string;
     platform:         Platform;
     durationSeconds:  number;
