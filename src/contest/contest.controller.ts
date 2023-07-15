@@ -7,8 +7,8 @@ export class ContestController {
   constructor(private readonly contestService: ContestService) {}
 
   @Get(':platform')
-  async findAll(@Param('platform') platform: string) {
-    const contests = await this.contestService.findAll(platform.toUpperCase() as Platform);
+  async findAll(@Param('platform') platform: Platform) {
+    const contests = await this.contestService.findAllFromDB(platform);
     return { status: 200, contests }
   }
 

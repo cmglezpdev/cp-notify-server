@@ -47,6 +47,16 @@ export class ContestService {
     return contests;
   }
 
+  async findAllFromDB(platform: string) {
+    const contests: Contest[] = await this.contestRepository
+      .createQueryBuilder('contest')
+      .innerJoin(Platform, 'platform', 'contest.platform = platform.id')
+      .where('UPPER(platform.name) = :platform', { platform: platform.toUpperCase() })
+      .getMany();
+  
+    return contests;
+  }
+
   async findAll(platform: IPlatform) {
     switch(platform) {
       case 'CODEFORCES':
