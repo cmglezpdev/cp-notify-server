@@ -34,7 +34,16 @@ export class CodeforcesService implements IPlatformService {
         const response: Response = await fetch(urlCodeforces, { method: 'GET' });
         const resp = await response.json();
         if(resp.status === 'OK') {
-            return resp.result[0];
+            const { rating, maxRating, rank } = resp.result[0];
+            
+            const user: IJudgeUser = {
+                handle,
+                rating: parseInt(rating!),
+                maxRating: parseInt(maxRating!),
+                rank: rank!
+            }
+
+            return user;
         } else {
             return null;
         }
