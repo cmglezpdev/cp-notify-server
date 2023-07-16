@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Platform } from './entities/platform.entity';
 
 @Injectable()
@@ -15,11 +15,7 @@ export class PlatformService {
     }
 
     async getPlatformByName(name: string) {
-        const platform: Platform = await this.platformRepository
-            .createQueryBuilder('platform')
-            .where('UPPER(platform.name) = :name', { name: name.toUpperCase() })
-            .getOne();
-
+        const platform: Platform = await this.platformRepository.findOne({ where: { name: ILike(name) } });
         return platform;
     }
 }

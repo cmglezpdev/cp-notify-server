@@ -1,13 +1,12 @@
 import { Controller, Get, Param, Post } from '@nestjs/common';
 import { ContestService } from './contest.service';
-import { IPlatform } from 'src/contest/interfaces';
 
 @Controller('contest')
 export class ContestController {
   constructor(private readonly contestService: ContestService) {}
 
   @Get(':platform')
-  async findAll(@Param('platform') platform: IPlatform) {
+  async findAll(@Param('platform') platform: string) {
     const contests = await this.contestService.findAllFromDB(platform);
     return { status: 200, contests }
   }

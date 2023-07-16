@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Cron } from '@nestjs/schedule';
 import { Repository } from 'typeorm';
 
-import { IPlatform } from './interfaces';
 import { Platform } from 'src/platform/entities/platform.entity';
 import { Contest } from './entities/contest.entity';
 import { AtCoderService } from '../judges/atcoder.service';
@@ -27,20 +26,16 @@ export class ContestService {
     const platforms: Platform[] = await this.platformRepository.find();
     const contests: Contest[] = [];
     
-    const promisesContests = platforms.map((plt) => this.findAll(plt.name.toUpperCase() as IPlatform));
+    const promisesContests = platforms.map((plt) => this.findAll(plt.name));
     const resultPromises = await Promise.all(promisesContests);
 
     platforms.forEach(async (plt, i) => {
       resultPromises[i].forEach(contest => {
-        const cs: Contest = new Contest();
-        cs.id = `${contest.id}`;
-        cs.name = contest.name;
-        cs.durationSeconds = contest.durationSeconds;
-        cs.startTimeSeconds = contest.startTimeSeconds;
-        cs.link = contest.link;
-        cs.type = contest.type;
-        cs.platform = plt;
-        contests.push(cs);
+        contests.push({
+          ...contest,
+          id: `${contest.id}`,
+          platform: plt
+        });
       });
     });
     
@@ -53,14 +48,14 @@ export class ContestService {
     const contests: Contest[] = await this.contestRepository
       .createQueryBuilder('contest')
       .innerJoinAndSelect('contest.platform', 'platform')
-      .where('UPPER(platform.name) = :platform', { platform: platform.toUpperCase() })
+      .where('platform.name ILIKE :platform', { platform })
       .getMany();
   
     return contests;
   }
 
-  async findAll(platform: IPlatform) {
-    switch(platform) {
+  async findAll(platform: string) {
+    switch(platform.toUpperCase()) {
       case 'CODEFORCES':
         const cf_contest = await this.codeforcesService.getUpCommingContest();
         if(!cf_contest) 
@@ -82,7 +77,7 @@ export class ContestService {
     const contest: Contest = await this.contestRepository
       .createQueryBuilder('contest')
       .innerJoinAndSelect('contest.platform', 'platform') 
-      .where('UPPER(platform.name) = :plt AND contest.id = :id', { plt: platform.toUpperCase(), id })
+      .where('platform.name ILIKE :platform AND contest.id = :id', { platform, id })
       .getOne(); 
 
     if(!contest) {
