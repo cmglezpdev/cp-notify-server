@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import { Injectable } from '@nestjs/common';
 import { IPlatformService, IJudgeUser } from './interfaces';
-import { IContest, Platform } from 'src/contest/interfaces';
+import { IContest, IPlatform } from 'src/contest/interfaces';
 import { parseDate, timeToSeconds } from '../utils';
 
 interface Contest {
@@ -46,7 +46,7 @@ export class AtCoderService implements IPlatformService {
             const generalContest : IContest[] = contests.map((contest) => {
                 const { name, start, duration, link, type } = contest;
                 const id = link.split('/')[link.split('/').length - 1];
-                const platform: Platform = 'ATCODER';
+                const platform: IPlatform = 'ATCODER';
                 const durationSeconds = timeToSeconds(duration);
                 const startTimeSeconds = parseDate(start).getTime();
         

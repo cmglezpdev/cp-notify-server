@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { Platform } from 'src/contest/interfaces';
+import { IPlatform } from 'src/contest/interfaces';
 import { AtCoderService } from 'src/judges/atcoder.service';
 import { CodeforcesService } from 'src/judges/codeforces.service';
 
@@ -10,7 +10,7 @@ export class ProfileService {
         private readonly codeforcesService: CodeforcesService
     ){}
 
-    async getProfile(platform: Platform, handle: string) {
+    async getProfile(platform: IPlatform, handle: string) {
         switch(platform) {
             case 'ATCODER':
                 const user = await this.atCoderService.getProfile(handle);

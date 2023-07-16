@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { ContestModule } from './contest/contest.module';
 import { JudgesModule } from './judges/judges.module';
 import { ProfileModule } from './profile/profile.module';
 import { PlatformModule } from './platform/platform.module';
+
 import { Platform } from './platform/entities/platform.entity';
 import { Contest } from './contest/entities/contest.entity';
 

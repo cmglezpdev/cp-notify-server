@@ -2,13 +2,13 @@
 export interface IContest {
     id:               string;
     name:             string;
-    platform:         Platform;
+    platform:         IPlatform;
     durationSeconds:  number;
     startTimeSeconds: number;
     link:             string;
     type:             string;
 }
 
-export type Platform = 
+export type IPlatform = 
  | 'CODEFORCES'
  | 'ATCODER';

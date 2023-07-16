@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Cron } from '@nestjs/schedule';
 import { Repository } from 'typeorm';
 
-import { Platform as IPlatform } from './interfaces';
+import { IPlatform } from './interfaces';
 import { Platform } from 'src/platform/entities/platform.entity';
 import { Contest } from './entities/contest.entity';
 import { AtCoderService } from '../judges/atcoder.service';
