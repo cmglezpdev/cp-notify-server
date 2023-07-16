@@ -10,7 +10,7 @@ export class ProfileService {
         private readonly codeforcesService: CodeforcesService
     ){}
 
-    async getProfile(platform: IPlatform, handle: string) {
+    async getProfile(platform: string, handle: string) {
         switch(platform) {
             case 'ATCODER':
                 const user = await this.atCoderService.getProfile(handle);
