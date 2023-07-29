@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 
 import { ContestModule } from './contest/contest.module';
 import { JudgesModule } from './judges/judges.module';
@@ -11,7 +12,6 @@ import { AuthModule } from './auth/auth.module';
 import { Platform } from './platform/entities/platform.entity';
 import { Contest } from './contest/entities/contest.entity';
 import { User } from './user/entities/user.entity';
-import { ConfigModule } from '@nestjs/config';
 import { JoiValidationSchema } from './config/app.config';
 import { UserModule } from './user/user.module';
 
