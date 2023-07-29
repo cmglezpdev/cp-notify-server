@@ -1,4 +1,4 @@
-import { BadRequestException, Get, Injectable, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -28,11 +28,23 @@ export class UserService {
             findOne({ where: { id: idUser }, relations: { platforms: true } });
         if(!user) throw new BadRequestException(`The id with id ${idUser} doesn't exist.`);
         const hasPlatform = user.platforms.some(platform => platform.id === idPlatform);
-        if(hasPlatform) throw new BadRequestException(`The user ${idUser} already have selected the platform ${idPlatform}.`);
+        if(hasPlatform) throw new BadRequestException(`The user ${idUser} already has the platform ${idPlatform} selected.`);
         
         const platform = await this.platformRepository.findOneBy({ id: idPlatform });
         if(!platform) throw new BadRequestException(`The platform with id ${idPlatform} not found.`);
         user.platforms.push(platform);
+        await this.userRepository.save(user);
+        return user;
+    }
+
+    async removePlatformFromUser(idUser: string, idPlatform: number) {
+        const user = await this.userRepository.
+            findOne({ where: { id: idUser }, relations: { platforms: true } });
+        if(!user) throw new BadRequestException(`The id with id ${idUser} doesn't exist.`);
+        const hasPlatform = user.platforms.some(platform => platform.id === idPlatform);
+        if(!hasPlatform) throw new BadRequestException(`The user ${idUser} hasn't selected the platform ${idPlatform}.`);
+        
+        user.platforms = user.platforms.filter(platform => platform.id !== idPlatform);
         await this.userRepository.save(user);
         return user;
     }

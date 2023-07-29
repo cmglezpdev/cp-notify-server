@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -30,5 +30,16 @@ export class UserController {
         status: 200,
         platforms
       }
+  }
+
+  // TODO: Verificar que el usuario que añade o elimina las plataformas sea el mismo al que le añaden/eliminan plataformas
+
+  @Delete(":idUser/platform/:idPlatform")
+  async removePlatformFromUser(@Param('idUser') idUser: string, @Param('idPlatform', ParseIntPipe) idPlatforms: number) {
+    await this.userService.removePlatformFromUser(idUser, idPlatforms);
+    return {
+      status: 201,
+      message: `The platform ${idPlatforms} was removed to the platforms list of the user ${idUser}.`
     }
+  }
 }
