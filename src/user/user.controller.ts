@@ -1,5 +1,6 @@
-import { Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { UserService } from './user.service';
+import { AddHandleDto } from './dto/add-handle.dto';
 
 @Controller('user')
 export class UserController {
@@ -40,6 +41,16 @@ export class UserController {
     return {
       status: 201,
       message: `The platform ${idPlatforms} was removed to the platforms list of the user ${idUser}.`
+    }
+  }
+
+  @Post(':userId/add_handle')
+  async addHandle(@Param('userId') userId: string, @Body() body: AddHandleDto) {
+    const { platformId, handle } = body;
+    await this.userService.addPlatform(userId, platformId, handle);
+    return {
+      status: 200,
+      message: `The handle ${handle} was added with (user: ${userId} and platform: ${platformId}).`
     }
   }
 }

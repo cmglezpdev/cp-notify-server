@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Handle } from "src/user/entities/handle.entity";
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity()
 export class Platform {
@@ -10,4 +11,7 @@ export class Platform {
 
     @Column('text', { nullable: false })
     link: string;
+
+    @OneToMany(() => Handle, handle => handle.platform)
+    handles: Handle[];
 }

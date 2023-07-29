@@ -14,6 +14,7 @@ import { Contest } from './contest/entities/contest.entity';
 import { User } from './user/entities/user.entity';
 import { JoiValidationSchema } from './config/app.config';
 import { UserModule } from './user/user.module';
+import { Handle } from './user/entities/handle.entity';
 
 @Module({
   controllers: [],
@@ -30,7 +31,7 @@ import { UserModule } from './user/user.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [Platform, Contest, User],
+      entities: [Platform, Contest, User, Handle],
       synchronize: true,
       autoLoadEntities: true
     }),

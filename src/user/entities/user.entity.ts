@@ -1,5 +1,6 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Platform } from 'src/platform/entities/platform.entity';
+import { Handle } from './handle.entity';
 
 @Entity('users')
 export class User {
@@ -18,6 +19,9 @@ export class User {
     @ManyToMany(() => Platform)
     @JoinTable()
     platforms: Platform[]
+
+    @OneToMany(() => Handle, handle => handle.user)
+    handles: Handle[]
 
     @BeforeInsert()
     checkFieldsBeforeInsert() {
