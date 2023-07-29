@@ -31,6 +31,7 @@ export class UserService {
         if(hasPlatform) throw new BadRequestException(`The user ${idUser} already have selected the platform ${idPlatform}.`);
         
         const platform = await this.platformRepository.findOneBy({ id: idPlatform });
+        if(!platform) throw new BadRequestException(`The platform with id ${idPlatform} not found.`);
         user.platforms.push(platform);
         await this.userRepository.save(user);
         return user;
