@@ -1,31 +1,16 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { AddHandleDto } from './dto/add-handle.dto';
+import { GetUser } from './decorators/get-user.decorator';
 
+@UseGuards(AuthGuard())
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get(':id')
-  async getUser(@Param('id') id: string) {
-    const user = await this.userService.getUserById(id);
-    return {
-      status: 200,
-      user
-    }
-  }
-
-  @Post(":idUser/platform/:idPlatform")
-  async addPlatformByUser(@Param('idUser') idUser: string, @Param('idPlatform', ParseIntPipe) idPlatforms: number) {
-    await this.userService.addPlatformByUser(idUser, idPlatforms);
-    return {
-      status: 201,
-      message: `The platform ${idPlatforms} was added to the platforms list of the user ${idUser}.`
-    }
-  }
-
-  @Get(":idUser/platforms")
-  async getUserPlatforms(@Param('idUser') idUser: string) {
+  @Get("platforms")
+  async getUserPlatforms(@GetUser(['id']) idUser: string) {
       const platforms = await this.userService.getPlatformsOfUser(idUser);
       return {
         status: 200,
@@ -33,20 +18,37 @@ export class UserController {
       }
   }
 
-  // TODO: Verificar que el usuario que añade o elimina las plataformas sea el mismo al que le añaden/eliminan plataformas
-
-  @Delete(":idUser/platform/:idPlatform")
-  async removePlatformFromUser(@Param('idUser') idUser: string, @Param('idPlatform', ParseIntPipe) idPlatforms: number) {
-    await this.userService.removePlatformFromUser(idUser, idPlatforms);
+  @Post("platform/:idPlatform")
+  async addPlatformByUser(
+    @GetUser(['id']) idUser: string, 
+    @Param('idPlatform', ParseIntPipe) idPlatforms: number
+  ) {
+    await this.userService.addPlatformByUser(idUser, idPlatforms);
     return {
       status: 201,
+      message: `The platform ${idPlatforms} was added to the platforms list of the user ${idUser}.`
+    }
+  }
+
+  @Delete("platform/:idPlatform")
+  async removePlatformFromUser(
+    @GetUser(['id']) idUser: string, 
+    @Param('idPlatform', ParseIntPipe) idPlatforms: number
+  ) {
+    await this.userService.removePlatformFromUser(idUser, idPlatforms);
+    return {
+      status: 200,
       message: `The platform ${idPlatforms} was removed to the platforms list of the user ${idUser}.`
     }
   }
 
-  @Post(':userId/add_handle')
-  async addHandle(@Param('userId') userId: string, @Body() body: AddHandleDto) {
-    const { platformId, handle } = body;
+  @Post('handle/:platformId')
+  async addHandle(
+    @GetUser(['id']) userId: string, 
+    @Param('platformId', ParseIntPipe) platformId: number,
+    @Body() body: AddHandleDto
+  ) {
+    const { handle } = body;
     await this.userService.addPlatform(userId, platformId, handle);
     return {
       status: 200,

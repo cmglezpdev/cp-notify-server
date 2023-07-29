@@ -16,16 +16,6 @@ export class UserService {
         private readonly handleRepository: Repository<Handle>,
     ){}
 
-    async getUserById(id: string) {
-        const user = await this.userRepository.findOneBy({ id });
-        if(!user) {
-            throw new BadRequestException(`The user with id ${id} doesn't exits.`);
-        }
-        delete user.password;
-        return user;
-    }
-
-
     async addPlatformByUser(idUser: string, idPlatform: number) {
         const user = await this.userRepository.
             findOne({ where: { id: idUser }, relations: { platforms: true } });
