@@ -10,9 +10,10 @@ import { AuthModule } from './auth/auth.module';
 
 import { Platform } from './platform/entities/platform.entity';
 import { Contest } from './contest/entities/contest.entity';
-import { User } from './auth/entities/user.entity';
+import { User } from './user/entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
 import { JoiValidationSchema } from './config/app.config';
+import { UserModule } from './user/user.module';
 
 @Module({
   controllers: [],
@@ -37,7 +38,8 @@ import { JoiValidationSchema } from './config/app.config';
     JudgesModule, 
     ProfileModule,
     PlatformModule,
-    AuthModule
+    AuthModule,
+    UserModule
   ],
 })
 export class AppModule {}

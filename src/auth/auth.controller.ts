@@ -3,6 +3,8 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dth';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from '../user/decorators/get-user.decorator';
+import { User } from '../user/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -21,7 +23,10 @@ export class AuthController {
 
   @Get('private')
   @UseGuards(AuthGuard())
-  privateRoute() {
-    return 'Hello World Private'
+  privateRoute(@GetUser() user: User) {
+    return {
+      ok: 200,
+      user
+    }
   }
 }
