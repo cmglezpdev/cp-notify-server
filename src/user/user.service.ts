@@ -1,26 +1,48 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { BadRequestException, Get, Injectable, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Platform } from 'src/platform/entities/platform.entity';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+    constructor(
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
+        @InjectRepository(Platform)
+        private readonly platformRepository: Repository<Platform>,
+    ){}
 
-  findAll() {
-    return `This action returns all user`;
-  }
+    async getUserById(id: string) {
+        const user = await this.userRepository.findOneBy({ id });
+        if(!user) {
+            throw new BadRequestException(`The user with id ${id} doesn't exits.`);
+        }
+        delete user.password;
+        return user;
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+    async addPlatformByUser(idUser: string, idPlatform: number) {
+        const user = await this.userRepository.
+            findOne({ where: { id: idUser }, relations: { platforms: true } });
+        if(!user) throw new BadRequestException(`The id with id ${idUser} doesn't exist.`);
+        const hasPlatform = user.platforms.some(platform => platform.id === idPlatform);
+        if(hasPlatform) throw new BadRequestException(`The user ${idUser} already have selected the platform ${idPlatform}.`);
+        
+        const platform = await this.platformRepository.findOneBy({ id: idPlatform });
+        user.platforms.push(platform);
+        await this.userRepository.save(user);
+        return user;
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+    async getPlatformsOfUser(id: string) {
+        const user = await this.userRepository.
+            findOne({ where: { id }, relations: { platforms: true } });
+        if(!user) {
+            throw new BadRequestException(`The user with id ${id} doesn't exist.`);
+        }
+
+        return user.platforms;
+    }
 }
