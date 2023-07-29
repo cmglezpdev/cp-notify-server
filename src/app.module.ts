@@ -6,9 +6,11 @@ import { ContestModule } from './contest/contest.module';
 import { JudgesModule } from './judges/judges.module';
 import { ProfileModule } from './profile/profile.module';
 import { PlatformModule } from './platform/platform.module';
+import { AuthModule } from './auth/auth.module';
 
 import { Platform } from './platform/entities/platform.entity';
 import { Contest } from './contest/entities/contest.entity';
+import { User } from './auth/entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
 import { JoiValidationSchema } from './config/app.config';
 
@@ -27,7 +29,7 @@ import { JoiValidationSchema } from './config/app.config';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [Platform, Contest],
+      entities: [Platform, Contest, User],
       synchronize: true,
       autoLoadEntities: true
     }),
@@ -35,6 +37,7 @@ import { JoiValidationSchema } from './config/app.config';
     JudgesModule, 
     ProfileModule,
     PlatformModule,
+    AuthModule
   ],
 })
 export class AppModule {}
