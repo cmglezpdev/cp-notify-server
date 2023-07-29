@@ -1,4 +1,5 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Platform } from 'src/platform/entities/platform.entity';
 
 @Entity('users')
 export class User {
@@ -13,6 +14,10 @@ export class User {
 
     @Column('text', { unique: true })
     email: string;
+
+    @ManyToMany(() => Platform)
+    @JoinTable()
+    platforms: Platform[]
 
     @BeforeInsert()
     checkFieldsBeforeInsert() {
