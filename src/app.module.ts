@@ -5,7 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 
 import { ContestModule } from './contest/contest.module';
 import { JudgesModule } from './judges/judges.module';
-import { ProfileModule } from './profile/profile.module';
 import { PlatformModule } from './platform/platform.module';
 import { AuthModule } from './auth/auth.module';
 
@@ -37,7 +36,6 @@ import { Handle } from './user/entities/handle.entity';
     }),
     ContestModule, 
     JudgesModule, 
-    ProfileModule,
     PlatformModule,
     AuthModule,
     UserModule
