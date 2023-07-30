@@ -6,6 +6,7 @@ import { User } from './entities/user.entity';
 import { Platform } from 'src/platform/entities/platform.entity';
 import { Handle } from './entities/handle.entity';
 import { AuthModule } from 'src/auth/auth.module';
+import { JudgesModule } from 'src/judges/judges.module';
 
 @Module({
   controllers: [UserController],
@@ -13,6 +14,7 @@ import { AuthModule } from 'src/auth/auth.module';
   imports: [
     TypeOrmModule.forFeature([User, Platform, Handle]),
     AuthModule,
+    JudgesModule
   ]
 })
 export class UserModule {}

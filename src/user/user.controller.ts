@@ -10,49 +10,67 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get("platforms")
-  async getUserPlatforms(@GetUser(['id']) idUser: string) {
-      const platforms = await this.userService.getPlatformsOfUser(idUser);
+  async getUserPlatforms(@GetUser(['id']) userId: string) {
+      const platforms = await this.userService.getPlatformsOfUser(userId);
       return {
         status: 200,
         platforms
       }
   }
 
-  @Post("platform/:idPlatform")
-  async addPlatformByUser(
-    @GetUser(['id']) idUser: string, 
-    @Param('idPlatform', ParseIntPipe) idPlatforms: number
-  ) {
-    await this.userService.addPlatformByUser(idUser, idPlatforms);
-    return {
-      status: 201,
-      message: `The platform ${idPlatforms} was added to the platforms list of the user ${idUser}.`
-    }
-  }
-
-  @Delete("platform/:idPlatform")
-  async removePlatformFromUser(
-    @GetUser(['id']) idUser: string, 
-    @Param('idPlatform', ParseIntPipe) idPlatforms: number
-  ) {
-    await this.userService.removePlatformFromUser(idUser, idPlatforms);
+  @Get('profiles')
+  async getUserHandles( @GetUser(['id']) userId: string ) {
+    const handles = await this.userService.getUserHandles(userId);
     return {
       status: 200,
-      message: `The platform ${idPlatforms} was removed to the platforms list of the user ${idUser}.`
+      handles
     }
   }
 
-  @Post('handle/:platformId')
+  @Post("platform/:platformId")
+  async addPlatformByUser(
+    @GetUser(['id']) userId: string, 
+    @Param('platformId', ParseIntPipe) platformId: number
+  ) {
+    await this.userService.addPlatformByUser(userId, platformId);
+    return {
+      status: 201,
+      message: `The platform ${platformId} was added to the platforms list of the user ${userId}.`
+    }
+  }
+
+  @Delete("platform/:platformId")
+  async removePlatformFromUser(
+    @GetUser(['id']) userId: string, 
+    @Param('platformId', ParseIntPipe) platformIds: number
+  ) {
+    await this.userService.removePlatformFromUser(userId, platformIds);
+    return {
+      status: 200,
+      message: `The platform ${platformIds} was removed to the platforms list of the user ${userId}.`
+    }
+  }
+
+  @Post('profile/:platformId')
   async addHandle(
     @GetUser(['id']) userId: string, 
     @Param('platformId', ParseIntPipe) platformId: number,
     @Body() body: AddHandleDto
   ) {
     const { handle } = body;
-    await this.userService.addPlatform(userId, platformId, handle);
+    await this.userService.addHandle(userId, platformId, handle);
     return {
       status: 200,
       message: `The handle ${handle} was added with (user: ${userId} and platform: ${platformId}).`
     }
+  }
+
+  @Delete('profile/:platformId')
+  async removeHandle(
+    @GetUser(['id']) userId: string,
+    @Param('platformId', ParseIntPipe) platformId: number,
+  ){
+    await this.userService.removeUserHandles(userId, platformId);
+    return {status: 200, message: `The handle of the platform ${platformId} was removed`};
   }
 }

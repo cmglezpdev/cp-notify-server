@@ -4,6 +4,9 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { Platform } from 'src/platform/entities/platform.entity';
 import { Handle } from './entities/handle.entity';
+import { AtCoderService } from '../judges/atcoder.service';
+import { CodeforcesService } from '../judges/codeforces.service';
+import { IJudgeUser } from 'src/judges/interfaces';
 
 @Injectable()
 export class UserService {
@@ -14,6 +17,9 @@ export class UserService {
         private readonly platformRepository: Repository<Platform>,
         @InjectRepository(Handle)
         private readonly handleRepository: Repository<Handle>,
+
+        private readonly atcoderService: AtCoderService,
+        private readonly codeforcesService: CodeforcesService,
     ){}
 
     async addPlatformByUser(idUser: string, idPlatform: number) {
@@ -52,7 +58,7 @@ export class UserService {
         return user.platforms;
     }
 
-    async addPlatform(userId: string, platformId: number, handle: string) {
+    async addHandle(userId: string, platformId: number, handle: string) {
         const user = await this.userRepository.findOneBy({ id: userId });
         if(!user) throw new BadRequestException(`The user with id ${userId} doesn't exist.`);
         const platform = await this.platformRepository.findOneBy({ id: platformId });
@@ -60,8 +66,23 @@ export class UserService {
         
         const hasHandle = await this.handleRepository.findOneBy({ userId, platformId });
         if(hasHandle) throw new BadRequestException(`The user ${userId} already has a handle from the platform ${platformId}.`);
-        const newHandle = { user, platform, handle };
-        
-        await this.handleRepository.save(newHandle);
+
+        let infoHandle: IJudgeUser = null;
+        if(platform.name === 'AtCoder') infoHandle = await this.atcoderService.getProfile(handle); 
+        if(platform.name === 'Codeforces') infoHandle = await this.codeforcesService.getProfile(handle);
+        if(!infoHandle) 
+            throw new BadRequestException(`The user ${handle} doesn't exist in the platform with id ${platform.id} (${platform.name}).`);
+        await this.handleRepository.save({ user, platform, ...infoHandle });
+    }
+
+    async getUserHandles(userId: string) {
+        const handles = await this.handleRepository.findBy({ userId });
+        return handles;
+    }
+
+    async removeUserHandles(userId: string, platformId: number) {
+        const handle = await this.handleRepository.findOneBy({ userId, platformId });
+        if(handle) throw new BadRequestException(`Don't have a handle registered in the platform ${platformId}`);
+        await this.handleRepository.remove(handle);
     }
 }
