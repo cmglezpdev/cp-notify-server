@@ -17,6 +17,15 @@ export class Handle {
     @Column('text')
     handle: string;
 
+    @Column('int')
+    rating: number;
+
+    @Column('int')
+    maxRating: number;
+    
+    @Column('text')
+    rank: string;
+
     @ManyToOne(() => User, (user) => user.handles)
     user: User;
 
