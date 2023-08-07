@@ -1,24 +1,32 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { ContestService } from './contest.service';
+import { Contest } from './entities/contest.entity';
 
 @Controller('contest')
 export class ContestController {
-  constructor(private readonly contestService: ContestService) {}
+  constructor(private readonly contestService: ContestService) { }
 
-  @Get(':platform')
-  async findAll(@Param('platform') platform: string) {
-    const contests = await this.contestService.findAllFromDB(platform);
-    return { status: 200, contests }
+  @Get()
+  findAll(): Promise<Contest[]> {
+    return this.contestService.findAll();
   }
 
-  @Get(':platform/:id')
-  async findContestById(@Param('platform') platform: string, @Param('id') id: string) {
-      return this.contestService.getContestById(platform, id);
+  @Get(':id')
+  findById(
+    @Param('id') id: string
+  ): Promise<Contest> {
+    return this.contestService.findById(id);
+  }
+  @Get('platform/:platformId')
+  getContests(
+    @Param('platformId', ParseIntPipe) platformId: number
+  ): Promise<Contest[]> {
+    return this.contestService.findContests(platformId);
   }
 
   @Post('/update')
   async updateContests() {
-    const contests = await this.contestService.insertContestsInDB();
-    return { status: 200, message: 'The contest were updated in the database.', contests };
+    return this.contestService.updateContestsFromDBWithScrappers();
   }
+
 }

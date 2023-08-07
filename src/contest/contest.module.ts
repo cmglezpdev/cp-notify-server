@@ -5,10 +5,19 @@ import { JudgesModule } from '../judges/judges.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Contest } from './entities/contest.entity';
 import { Platform } from 'src/platform/entities/platform.entity';
+import { PlatformModule } from 'src/platform/platform.module';
 
 @Module({
   controllers: [ContestController],
   providers: [ContestService],
-  imports: [JudgesModule, TypeOrmModule.forFeature([Contest, Platform])]
+  imports: [
+    JudgesModule,
+    PlatformModule,
+    TypeOrmModule.forFeature([Contest, Platform])
+  ],
+  exports: [
+    ContestService,
+    TypeOrmModule
+  ]
 })
-export class ContestModule {}
+export class ContestModule { }

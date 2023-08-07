@@ -9,18 +9,18 @@ export class Contest {
     @Column('text', { nullable: false })
     name: string;
 
-    @Column('bigint', { nullable: false })
-    durationSeconds:  number;
+    @Column('int8', { nullable: false })
+    durationSeconds: number;
 
-    @Column('bigint', { nullable: false })
+    @Column('int8', { nullable: false })
     startTimeSeconds: number;
-    
+
     @Column('text', { nullable: false })
-    link:             string;
+    link: string;
 
     @Column('text')
     type?: string;
 
-    @ManyToOne(() => Platform)
+    @ManyToOne(() => Platform, { eager: true })
     platform: Platform;
 }
