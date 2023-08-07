@@ -6,21 +6,17 @@ import { Platform } from './entities/platform.entity';
 export class PlatformController {
   constructor(
     private readonly platformService: PlatformService
-  ) {}
+  ) { }
 
   @Get()
-  async getPlatforms() {
-    const platforms: Platform[] = await this.platformService.getPlatforms();
-    return {
-      status: 200,
-      platforms
-    }
+  getPlatforms(): Promise<Platform[]> {
+    return this.platformService.findAll();
   }
 
   @Get(':name')
   async getPlatformByName(@Param('name') name: string) {
-    const platform = await this.platformService.getPlatformByName(name);
-    if(!platform) throw new NotFoundException(`The platform ${name} not found in the database.`);
+    const platform = await this.platformService.findByName(name);
+    if (!platform) throw new NotFoundException(`The platform ${name} not found in the database.`);
     return {
       status: 200,
       platform
