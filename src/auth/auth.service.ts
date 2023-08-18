@@ -15,7 +15,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService
-  ){}
+  ) { }
 
   async createUser(createUserDto: CreateUserDto) {
     try {
@@ -24,7 +24,7 @@ export class AuthService {
       await this.userRepository.save(user);
       delete user.password;
       return {
-        ...user,
+        user,
         token: this.getJwtToken({ userId: user.id })
       }
     } catch (error) {
@@ -35,23 +35,23 @@ export class AuthService {
   async loginUser(user: LoginUserDto) {
     const { email, password } = user;
     const userFromDb = await this.userRepository.findOneBy({ email });
-    if(!userFromDb) throw new BadRequestException('The user doesn\'t exist.')
+    if (!userFromDb) throw new BadRequestException('The user doesn\'t exist.')
     const checkPassword = bcrypt.compareSync(password, userFromDb.password);
-    if(!checkPassword) throw new UnauthorizedException("The password is incorrect.");
+    if (!checkPassword) throw new UnauthorizedException("The password is incorrect.");
     delete userFromDb.password;
     return {
-      ...userFromDb,
+      user: userFromDb,
       token: this.getJwtToken({ userId: userFromDb.id })
     }
   }
 
   private getJwtToken(payload: JwtPayload) {
     const token = this.jwtService.sign(payload);
-    return token; 
+    return token;
   }
 
   private throwErrorMessages(error: any) {
-    switch( error.code ) {
+    switch (error.code) {
       case "23505":
         throw new BadRequestException(this.throwErrorMessages(error));
       default:

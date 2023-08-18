@@ -10,7 +10,7 @@ export class Handle {
 
     @Column('text')
     userId: string;
-    
+
     @Column('int')
     platformId: number;
 
@@ -22,7 +22,7 @@ export class Handle {
 
     @Column('int')
     maxRating: number;
-    
+
     @Column('text')
     rank: string;
 

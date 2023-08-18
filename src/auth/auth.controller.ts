@@ -8,7 +8,7 @@ import { User } from '../user/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('register')
   createUser(@Body() createUserDto: CreateUserDto) {
