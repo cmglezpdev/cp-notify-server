@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Put } from '@nestjs/common';
 import { ContestService } from './contest.service';
 import { Contest } from './entities/contest.entity';
 
@@ -17,14 +17,15 @@ export class ContestController {
   ): Promise<Contest> {
     return this.contestService.findById(id);
   }
-  @Get('platform/:platformId')
+
+  @Get('platform/:platform')
   getContests(
-    @Param('platformId', ParseIntPipe) platformId: number
+    @Param('platform') platform: string
   ): Promise<Contest[]> {
-    return this.contestService.findContests(platformId);
+    return this.contestService.findContestsByName(platform);
   }
 
-  @Post('/update')
+  @Put('/update')
   async updateContests() {
     return this.contestService.updateContestsFromDBWithScrappers();
   }

@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cron } from '@nestjs/schedule';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 import { AtCoderService } from '../judges/atcoder.service';
 import { CodeforcesService } from '../judges/codeforces.service';
@@ -13,6 +13,8 @@ import { CreateContestDto } from './dtos';
 @Injectable()
 export class ContestService {
 
+  private readonly logger = new Logger('ContestService');
+
   constructor(
     private readonly atCoderService: AtCoderService,
     private readonly codeforcesService: CodeforcesService,
@@ -22,10 +24,11 @@ export class ContestService {
   ) { }
 
   async findAll(): Promise<Contest[]> {
-    return this.contestRepository.find({});
+    return this.contestRepository.find({ order: { startTimeSeconds: 'ASC' } });
   }
 
   async findById(id: string): Promise<Contest> {
+    console.log(id);
     const contest = await this.contestRepository.findOneBy({ id });
     if (!contest) throw new BadRequestException(`The contests with id ${id} not found`);
     return contest;
@@ -38,14 +41,13 @@ export class ContestService {
       platform: { id: platformId }
     })
 
-    await this.contestRepository.save(contest);
-    return this.findById(createContestDto.id);
+    return this.contestRepository.save(contest);
   }
 
-  async findContests(platformId: number): Promise<Contest[]> {
+  async findContestsByName(platform: string): Promise<Contest[]> {
     return this.contestRepository.find({
       where: {
-        platform: { id: platformId }
+        platform: { name: ILike(platform) }
       }
     })
   }
@@ -53,26 +55,25 @@ export class ContestService {
   @Cron('0 0 0 * * *')
   async updateContestsFromDBWithScrappers() {
     const platforms: Platform[] = await this.platformService.findAll();
-    const promisesContests = platforms.map((plt) => this.findAllFromScrapper(plt.name));
-    const resultPromises = await Promise.all(promisesContests);
+    const scrapperContests = await Promise.all(platforms.map(plt => this.findAllFromScrapper(plt.name)));
 
     const createContests: Promise<Contest>[] = [];
-    platforms.forEach(async (plt, i) => {
-      resultPromises[i].forEach(contest => {
+    platforms.forEach((plt, i) => {
+      scrapperContests[i].forEach(contest => {
         createContests.push(
           this.create({
             ...contest,
-            id: `${contest.id}`,
             platformId: plt.id
           })
         )
       });
     });
 
-    const contests = await Promise.all(createContests);
     await this.contestRepository.clear();
-    await this.contestRepository.insert(contests);
-    return this.contestRepository.find({});
+    const xx = await Promise.all(createContests);
+    this.logger.log('Database updated successfully')
+    console.log("Database Updated succsefully");
+    return xx;
   }
 
   async findAllFromScrapper(platform: string) {
@@ -80,7 +81,7 @@ export class ContestService {
       case 'CODEFORCES':
         const cf_contest = await this.codeforcesService.getUpCommingContest();
         if (!cf_contest)
-          throw new NotFoundException({ status: 404, message: 'Fail to extract the contest from Codefoces.' })
+          throw new NotFoundException({ status: 404, message: 'Fail to extract the contests from Codeforces.' })
         return cf_contest;
 
       case 'ATCODER':
