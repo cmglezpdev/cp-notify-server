@@ -23,9 +23,8 @@ export class UserService {
     ) { }
 
     async addPlatformByUser(idUser: string, idPlatform: number) {
-        const user = await this.userRepository.
-            findOne({ where: { id: idUser }, relations: { platforms: true } });
-        if (!user) throw new BadRequestException(`The id with id ${idUser} doesn't exist.`);
+        const user = await this.userRepository.findOne({ where: { id: idUser }, relations: { platforms: true } });
+        if (!user) throw new BadRequestException(`The user with id ${idUser} doesn't exist.`);
         const hasPlatform = user.platforms.some(platform => platform.id === idPlatform);
         if (hasPlatform) throw new BadRequestException(`The user ${idUser} already has the platform ${idPlatform} selected.`);
 
@@ -48,13 +47,12 @@ export class UserService {
         return user;
     }
 
-    async getPlatformsOfUser(id: string) {
+    async getPlatformsOfUser(id: string): Promise<Platform[]> {
         const user = await this.userRepository.
             findOne({ where: { id }, relations: { platforms: true } });
         if (!user) {
             throw new BadRequestException(`The user with id ${id} doesn't exist.`);
         }
-
         return user.platforms;
     }
 
@@ -85,7 +83,10 @@ export class UserService {
     }
 
     async getUserHandles(userId: string) {
-        const handles = await this.handleRepository.findBy({ userId });
+        const handles = await this.handleRepository.find({
+            where: { userId },
+            relations: { platform: true }
+        });
         return handles;
     }
 
